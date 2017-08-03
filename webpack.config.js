@@ -17,7 +17,7 @@ if (process.env.SENTRY_STATIC_DIST_PATH) {
 var IS_PRODUCTION = process.env.NODE_ENV === 'production';
 var IS_TEST = process.env.NODE_ENV === 'TEST' || process.env.TEST_SUITE;
 
-var REFRESH = process.env.WEBPACK_LIVERELOAD === '1';
+var REFRESH = process.env.WEBPACK_HMR === '1';
 
 var babelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '.babelrc')));
 babelConfig.cacheDirectory = true;
@@ -192,9 +192,19 @@ var config = {
 // We only need to use the webpack-livereload-plugin for development builds. Production
 // builds don't have this module.
 if (!IS_PRODUCTION && REFRESH) {
-  config.plugins.push(
-    new (require('webpack-livereload-plugin'))({appendScriptTag: true})
-  );
+  // Otherwise with hot reloads we get module ID number
+  config.plugins.push(new webpack.NamedModulesPlugin());
+  // HMR
+  config.plugins.push(new webpack.HotModuleReplacementPlugin());
+  config.devServer = {
+    headers: {
+      'Access-Control-Allow-Origin': 'http://localhost:8000',
+      'Access-Control-Allow-Credentials': 'true'
+    },
+    contentBase: './src/sentry/static/sentry',
+    hot: true
+  };
+  config.output.publicPath = 'http://localhost:8080/';
 }
 
 if (IS_PRODUCTION) {

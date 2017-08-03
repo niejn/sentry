@@ -43,6 +43,14 @@
   {% locale_js_include %}
   <script src="{% asset_url "sentry" "dist/app.js" %}"{% crossorigin %}></script>
 
+  {% comment %}
+  TODO(billy) use this in DEVELOPMENT
+  <link href="http://localhost:8080/sentry.css" rel="stylesheet"/>
+  <script src="http://localhost:8080/vendor.js"{% crossorigin %}></script>
+  <script src="http://localhost:8080/app.js"{% crossorigin %}></script>
+  {% endcomment %}
+
+
   <script>
     for (var n in window.exports.default) {
       window[n] = window.exports.default[n];
